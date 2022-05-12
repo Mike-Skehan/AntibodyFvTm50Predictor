@@ -1,0 +1,24 @@
+import numpy as np
+import data_parser as dp
+import sys
+
+sys.path.insert(0,"../data/")
+sys.path.insert(0,"../")
+
+amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
+
+def one_hot_encoder(sequences, max_length):
+
+        one_hot_seq = np.zeros((len(sequences), max_length, len(amino_acids)), dtype='int')
+
+        for x, seq in enumerate(sequences):
+            for y, aa in enumerate(seq):
+                loc = amino_acids.find(aa)
+                if loc > 0:
+                    one_hot_seq[x, y, loc] = 1
+        return one_hot_seq
+
+if __name__ == '__main__':
+    light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
+    VH_encoded = one_hot_encoder(heavy,140)
+    print (VH_encoded[1])
