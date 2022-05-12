@@ -27,3 +27,7 @@ def data_extract(data_file):
         source_list = remove_special_chars(source)
 
         return l_seq_list, h_seq_list, source_list, names
+
+if __name__ == '__main__':
+        light, heavy, source, name = data_extract('data/AbFv_animal_source.csv')
+        print (heavy)
