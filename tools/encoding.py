@@ -9,6 +9,14 @@ amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
 
 def one_hot_encoder(sequences, max_length):
 
+    """
+    General info
+
+    :param sequences    : list of Fv amino acid sequences.
+    :param max_length   : maximum sequence length of Fv amino acid sequence.
+    :return             : amino acid sequences encoded in the one hot form.
+    """
+
         one_hot_seq = np.zeros((len(sequences), max_length, len(amino_acids)), dtype='int')
 
         for x, seq in enumerate(sequences):
