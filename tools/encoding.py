@@ -16,15 +16,14 @@ def one_hot_encoder(sequences, max_length):
     :param max_length   : maximum sequence length of Fv amino acid sequence.
     :return             : amino acid sequences encoded in the one hot form.
     """
+    one_hot_seq = np.zeros((len(sequences), max_length, len(amino_acids)), dtype='int')
 
-        one_hot_seq = np.zeros((len(sequences), max_length, len(amino_acids)), dtype='int')
-
-        for x, seq in enumerate(sequences):
-            for y, aa in enumerate(seq):
-                loc = amino_acids.find(aa)
-                if loc > 0:
+    for x, seq in enumerate(sequences):
+        for y, aa in enumerate(seq):
+            loc = amino_acids.find(aa)
+            if loc > 0:
                     one_hot_seq[x, y, loc] = 1
-        return one_hot_seq
+    return one_hot_seq
 
 if __name__ == '__main__':
     light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')

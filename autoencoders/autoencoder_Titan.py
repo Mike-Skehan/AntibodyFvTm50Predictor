@@ -1,8 +1,11 @@
 from keras import layers as L
+from keras import backend as K
 import keras
 import tensorflow as tf
 from IPython.display import SVG
 from keras.utils.vis_utils import model_to_dot
+import sklearn as sk
+from sklearn.preprocessing import MinMaxScaler
 
 from tools.encoding import one_hot_encoder
 import data_parser as dp
@@ -12,13 +15,37 @@ sys.path.insert(0,"../data/")
 sys.path.insert(0,"../")
 sys.path.insert(0,"../tools/")
 
-light_len = 140
-heavy_len = 120
+light_len = 120
+heavy_len = 140
 
 LSTM = tf.keras.layers.LSTM(16)
 LSTM1 = tf.keras.layers.LSTM(16,return_sequences = True)
 
 ReductionV2AUTO = tf.keras.losses.Reduction.AUTO
+
+scaler = MinMaxScaler()
+
+def get_loss(mask_value):
+
+    """
+    :param mask_value:
+    :return:
+    """
+
+    mask_value = K.variable(mask_value, dtype=K.floatx())
+
+    def masked_mse(y_true, y_pred):
+        # find out which timesteps in `y_true` are not the padding character
+        mask = K.all(K.equal(y_true, mask_value), axis=-1)
+        mask = K.expand_dims(1 - K.cast(mask, K.floatx()))
+
+        loss = (y_true - y_pred) ** 2 * mask
+
+        # take average w.r.t. the number of unmasked entries
+        return K.sum(loss) / K.sum(mask)
+
+    return masked_mse
+
 
 def autoencoder_Titan(input_shape, compile = True):
 
@@ -91,15 +118,16 @@ def autoencoder_Titan(input_shape, compile = True):
     encoder_model = keras.models.Model(inputs=[light_input, heavy_input], outputs=code)
 
     if compile:
-        mse_loss = tf.keras.losses.MeanSquaredError(reduction=ReductionV2AUTO, name='mean_squared_error')
+        #mse_loss = tf.keras.losses.MeanSquaredError(reduction=ReductionV2AUTO, name='mean_squared_error')
+        mask_mse_loss = get_loss(0)
         #masked_mse = get_loss(0)
-        autoencoder.compile(optimizer=tf.keras.optimizers.Adamax(), loss=mse_loss)
+        autoencoder.compile(optimizer=tf.keras.optimizers.Adamax(), loss=mask_mse_loss)
 
     return encoder_model, autoencoder
 
 
 
-encoder, autoencoder = autoencoder_Titan(4)
+encoder, autoencoder = autoencoder_Titan(20)
 
 #SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
 
@@ -107,8 +135,19 @@ encoder, autoencoder = autoencoder_Titan(4)
 print(autoencoder.count_params())
 
 if __name__ == '__main__':
+
     light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
-    light_encoded = one_hot_encoder(light, 140)
+    light_encoded = one_hot_encoder(light, 120)
+    #light_encoded = scaler.fit_transform(light_encoded.reshape(-1, light_encoded.shape[-1])).reshape(light_encoded.shape)
+
     heavy_encoded = one_hot_encoder(heavy, 140)
-    autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
-                          epochs=2000, batch_size=32, validation_split=0.2)
+    heavy_encoded1 = scaler.fit_transform(heavy_encoded.reshape(-1, heavy_encoded.shape[-1])).reshape(heavy_encoded.shape)
+
+    print(heavy_encoded[0])
+    print(heavy_encoded1[0])
+    print(type(heavy_encoded.ndim))
+    print(light_encoded.ndim)
+    print(type(light_encoded.ndim))
+
+    #autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
+    #                      epochs=2000, batch_size=32, validation_split=0.2, shuffle = True)
