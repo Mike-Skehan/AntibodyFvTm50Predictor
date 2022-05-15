@@ -6,6 +6,7 @@ from IPython.display import SVG
 from keras.utils.vis_utils import model_to_dot
 import sklearn as sk
 from sklearn.preprocessing import MinMaxScaler
+import numpy as np
 
 from tools.encoding import one_hot_encoder
 import data_parser as dp
@@ -15,8 +16,8 @@ sys.path.insert(0,"../data/")
 sys.path.insert(0,"../")
 sys.path.insert(0,"../tools/")
 
-light_len = 120
-heavy_len = 140
+light_len = 200
+heavy_len = 250
 
 LSTM = tf.keras.layers.LSTM(16)
 LSTM1 = tf.keras.layers.LSTM(16,return_sequences = True)
@@ -24,6 +25,72 @@ LSTM1 = tf.keras.layers.LSTM(16,return_sequences = True)
 ReductionV2AUTO = tf.keras.losses.Reduction.AUTO
 
 scaler = MinMaxScaler()
+
+aa_order = ['ALA',
+ 'ARG',
+ 'ASN',
+ 'ASP',
+ 'CYS',
+ 'GLN',
+ 'GLU',
+ 'GLY',
+ 'HIS',
+ 'ILE',
+ 'LEU',
+ 'LYS',
+ 'MET',
+ 'PHE',
+ 'PRO',
+ 'SER',
+ 'THR',
+ 'TRP',
+ 'TYR',
+ 'VAL']
+
+aa3_aa1 = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+           'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+           'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+           'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+
+class AminoAcidEncoder:
+    def __init__(self, max_length, copy=True):
+        """
+        3D matrix scaling for RNN preparation with mask
+        """
+        self.copy = copy
+        self.aa_order = list(map(lambda x: aa3_aa1[x], aa_order))
+        self.max_length = max_length
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        result = np.zeros((len(X), self.max_length, len(aa_order)+1))
+        for i in range(len(X)):
+            for j in range(len(X[i])):
+                try:
+                    result[i, j, self.aa_order.index(X[i][j])] = 1
+                except:
+                    result[i, j, len(aa_order)] = 1
+        return result
+
+    def inverse_transform(self, X, y=None):
+        result = list()
+        for i in range(X.shape[0]):
+            result_i=list()
+            for j in range(self.max_length):
+                idx = np.where(X[i,j]==1)[0]
+                if idx.size != 0:
+                    idx = int(idx)
+                    if idx < len(self.aa_order):
+                        result_i.append(self.aa_order[idx])
+                    else:
+                        result_i.append('')
+            print(i, ''.join(result_i))
+            result.append(''.join(result_i))
+        return result
+
+
 
 def get_loss(mask_value):
 
@@ -87,19 +154,19 @@ def autoencoder_Titan(input_shape, compile = True):
 
         merged_dense_layer_1 = L.Dense(32, activation='relu', name='Merged_encoder_dense_1')(merge_layer)
 
-        bottleneck = L.Dense(2, name='bottleneck')(merged_dense_layer_1)
+        bottleneck = L.Dense(50, name='bottleneck')(merged_dense_layer_1)
 
         return bottleneck
 
     def decoder(encoder_layer):
-        merged_dense_decode_1 = L.Dense(32, activation='relu', name='Merged_decoder_dense_1')(encoder_layer)
+        merged_dense_decode_1 = L.Dense(16, activation='relu', name='Merged_decoder_dense_1')(encoder_layer)
 
-        merged_dense_decode_2 = L.Dense(64, activation='relu', name='merged_decoder_dense2')(merged_dense_decode_1)
+        merged_dense_decode_2 = L.Dense(16, activation='relu', name='merged_decoder_dense2')(merged_dense_decode_1)
 
         outputs = []
 
         for name, length in zip(['Light', 'Heavy'], [light_len, heavy_len]):
-            dense_decode_3 = L.Dense(16, activation='relu', name='{}_decoder_dense1'.format(name))(merged_dense_decode_2)
+            dense_decode_3 = L.Dense(32, activation='relu', name='{}_decoder_dense1'.format(name))(merged_dense_decode_2)
 
             repeat_vector_1 = L.RepeatVector(length, name='{}_decoder_repeat_vector1'.format(name))(dense_decode_3)
 
@@ -127,7 +194,7 @@ def autoencoder_Titan(input_shape, compile = True):
 
 
 
-encoder, autoencoder = autoencoder_Titan(20)
+encoder, autoencoder = autoencoder_Titan(21)
 
 #SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
 
@@ -137,17 +204,15 @@ print(autoencoder.count_params())
 if __name__ == '__main__':
 
     light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
-    light_encoded = one_hot_encoder(light, 120)
+
+    #light_encoded = one_hot_encoder(light, 120)
     #light_encoded = scaler.fit_transform(light_encoded.reshape(-1, light_encoded.shape[-1])).reshape(light_encoded.shape)
+    light_encoded = AminoAcidEncoder(max_length=light_len).transform(light)
 
-    heavy_encoded = one_hot_encoder(heavy, 140)
-    heavy_encoded1 = scaler.fit_transform(heavy_encoded.reshape(-1, heavy_encoded.shape[-1])).reshape(heavy_encoded.shape)
+    #heavy_encoded = one_hot_encoder(heavy, 140)
+    #heavy_encoded = scaler.fit_transform(heavy_encoded.reshape(-1, heavy_encoded.shape[-1])).reshape(heavy_encoded.shape)
 
-    print(heavy_encoded[0])
-    print(heavy_encoded1[0])
-    print(type(heavy_encoded.ndim))
-    print(light_encoded.ndim)
-    print(type(light_encoded.ndim))
+    heavy_encoded = AminoAcidEncoder(max_length=heavy_len).transform(heavy)
 
-    #autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
-    #                      epochs=2000, batch_size=32, validation_split=0.2, shuffle = True)
+    autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
+                         epochs=500, batch_size=32, validation_split=0.2, shuffle = True, steps_per_epoch=1700)
