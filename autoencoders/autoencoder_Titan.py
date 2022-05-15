@@ -7,6 +7,8 @@ from keras.utils.vis_utils import model_to_dot
 import sklearn as sk
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
+import os
+os.environ['CUDA_VISIBLE_DEVICES']='1'
 
 from tools.encoding import one_hot_encoder
 import data_parser as dp
@@ -18,9 +20,13 @@ sys.path.insert(0,"../tools/")
 
 light_len = 200
 heavy_len = 250
+print(len(tf.config.list_physical_devices('GPU'))>0)
 
-LSTM = tf.keras.layers.LSTM(16)
-LSTM1 = tf.keras.layers.LSTM(16,return_sequences = True)
+
+#LSTM = tf.keras.layers.CuDNNLSTM(16)
+LSTM = tf.compat.v1.keras.layers.CuDNNLSTM(16)
+#LSTM1 = tf.keras.layers.CuDNNLSTM(16,return_sequences = True)
+LSTM1 = tf.compat.v1.keras.layers.CuDNNLSTM(16,return_sequences = True)
 
 ReductionV2AUTO = tf.keras.losses.Reduction.AUTO
 
