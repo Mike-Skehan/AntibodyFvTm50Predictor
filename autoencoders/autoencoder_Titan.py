@@ -3,12 +3,22 @@ from keras import backend as K
 import keras
 import tensorflow as tf
 from IPython.display import SVG
+from tensorflow.keras.utils import plot_model
+import pydot
+import graphviz
+
 from keras.utils.vis_utils import model_to_dot
+
 import sklearn as sk
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
 import os
-os.environ['CUDA_VISIBLE_DEVICES']='1'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
+os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
 
 from tools.encoding import one_hot_encoder
 import data_parser as dp
@@ -20,7 +30,7 @@ sys.path.insert(0,"../tools/")
 
 light_len = 200
 heavy_len = 250
-print(len(tf.config.list_physical_devices('GPU'))>0)
+#print(len(tf.config.list_physical_devices('GPU'))>0)
 
 
 #LSTM = tf.keras.layers.CuDNNLSTM(16)
@@ -205,9 +215,14 @@ encoder, autoencoder = autoencoder_Titan(21)
 #SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
 
 
-print(autoencoder.count_params())
+#print(autoencoder.count_params())
 
 if __name__ == '__main__':
+
+    plot_model(autoencoder,show_shapes = True, to_file='model.png')
+    #SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
+
+
 
     light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
 
@@ -220,5 +235,13 @@ if __name__ == '__main__':
 
     heavy_encoded = AminoAcidEncoder(max_length=heavy_len).transform(heavy)
 
-    autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
-                         epochs=500, batch_size=32, validation_split=0.2, shuffle = True, steps_per_epoch=1700)
+    history = autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
+                         epochs=200, batch_size=32, validation_split=0.2, shuffle = True)
+
+    plt.figure(figsize=(10, 4))
+    plt.plot(autoencoder.history.history['val_loss'], label='Validation loss')
+    plt.plot(autoencoder.history.history['loss'], label='Training loss')
+    plt.legend()
+    plt.grid()
+    plt.tight_layout()
+    plt.savefig('loss_output.png')
