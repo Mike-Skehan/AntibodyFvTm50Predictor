@@ -28,11 +28,24 @@ def one_hot_encoder(sequences, max_length):
 if __name__ == '__main__':
     light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
     print(type(heavy[1]))
-    VH_encoded = one_hot_encoder(heavy,140)
-    print (VH_encoded[700])
+    #VH_encoded = one_hot_encoder(heavy,140)
+    #print (VH_encoded[700])
 
 
     light, heavy, source, name = dp.data_extract_abY("../data/abYsis_data.csv")
     print(type(heavy[1]))
-    VH_encoded = one_hot_encoder(heavy, 140)
-    print(VH_encoded[700])
+    #VH_encoded = one_hot_encoder(heavy, 140)
+    #print(VH_encoded[700])
+
+    #g = np.zeros((len(heavy), 140, len(amino_acids)), dtype='int')
+    #print(g[20,1,4])
+
+
+
+    for x, seq in enumerate(heavy):
+        print (x)
+    #    for y, aa in enumerate(seq):
+    #        loc = amino_acids.find(aa)
+    #        if loc > 0:
+    #                g[x, y, loc] = 1
+    #print(g)
