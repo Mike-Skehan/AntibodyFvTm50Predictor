@@ -27,5 +27,12 @@ def one_hot_encoder(sequences, max_length):
 
 if __name__ == '__main__':
     light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
+    print(type(heavy[1]))
     VH_encoded = one_hot_encoder(heavy,140)
     print (VH_encoded[700])
+
+
+    light, heavy, source, name = dp.data_extract_abY("../data/abYsis_data.csv")
+    print(type(heavy[1]))
+    VH_encoded = one_hot_encoder(heavy, 140)
+    print(VH_encoded[700])

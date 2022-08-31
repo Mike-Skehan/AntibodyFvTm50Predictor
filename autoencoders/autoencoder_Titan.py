@@ -224,15 +224,14 @@ if __name__ == '__main__':
 
 
 
-    light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
+    light, heavy, source, name = dp.data_extract('../data/abYsis_data.csv')
 
-    #light_encoded = one_hot_encoder(light, 120)
+    #light_encoded = one_hot_encoder(light, 200)
     #light_encoded = scaler.fit_transform(light_encoded.reshape(-1, light_encoded.shape[-1])).reshape(light_encoded.shape)
     light_encoded = AminoAcidEncoder(max_length=light_len).transform(light)
 
-    #heavy_encoded = one_hot_encoder(heavy, 140)
+    #heavy_encoded = one_hot_encoder(heavy, 250)
     #heavy_encoded = scaler.fit_transform(heavy_encoded.reshape(-1, heavy_encoded.shape[-1])).reshape(heavy_encoded.shape)
-
     heavy_encoded = AminoAcidEncoder(max_length=heavy_len).transform(heavy)
 
     history = autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
