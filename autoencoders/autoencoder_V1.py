@@ -28,8 +28,8 @@ sys.path.insert(0,"../data/")
 sys.path.insert(0,"../")
 sys.path.insert(0,"../tools/")
 
-light_len = 200
-heavy_len = 250
+light_len = 150
+heavy_len = 150
 #print(len(tf.config.list_physical_devices('GPU'))>0)
 
 
@@ -145,6 +145,8 @@ def autoencoder_Titan(input_shape, compile = True):
     light_input = L.Input((light_len,input_shape), dtype='float', name='Light_Input')
     heavy_input = L.Input((heavy_len,input_shape), dtype='float', name='Heavy_Input')
 
+
+
     #light_embed = L.Embedding(input_dim=input_dims, output_dim=10, name='Light_Embed')(light_input)
     #heavy_embed = L.Embedding(input_dim=input_dims, output_dim=10, name='Heavy_Embed')(heavy_input)
 
@@ -204,13 +206,13 @@ def autoencoder_Titan(input_shape, compile = True):
         #mse_loss = tf.keras.losses.MeanSquaredError(reduction=ReductionV2AUTO, name='mean_squared_error')
         mask_mse_loss = get_loss(0)
         #masked_mse = get_loss(0)
-        autoencoder.compile(optimizer=tf.keras.optimizers.Adamax(), loss=mask_mse_loss)
+        autoencoder.compile(optimizer=tf.keras.optimizers.Adamax(), loss=mask_mse_loss, metrics=['acc'])
 
     return encoder_model, autoencoder
 
 
 
-encoder, autoencoder = autoencoder_Titan(21)
+encoder, autoencoder = autoencoder_Titan(20)
 
 #SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
 
@@ -219,23 +221,34 @@ encoder, autoencoder = autoencoder_Titan(21)
 
 if __name__ == '__main__':
 
-    plot_model(autoencoder,show_shapes = True, to_file='model.png')
+    #plot_model(autoencoder,show_shapes = True, to_file='model.png')
     #SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
 
 
 
-    light, heavy, source, name = dp.data_extract('../data/abYsis_data.csv')
+    light, heavy, source, name = dp.data_extract_abY('../data/abYsis_data.csv')
 
-    #light_encoded = one_hot_encoder(light, 200)
-    #light_encoded = scaler.fit_transform(light_encoded.reshape(-1, light_encoded.shape[-1])).reshape(light_encoded.shape)
-    light_encoded = AminoAcidEncoder(max_length=light_len).transform(light)
+    test_light, test_heavy, tm = dp.data_extract_Jain('../data/Jain_Ab_dataset.csv')
 
-    #heavy_encoded = one_hot_encoder(heavy, 250)
-    #heavy_encoded = scaler.fit_transform(heavy_encoded.reshape(-1, heavy_encoded.shape[-1])).reshape(heavy_encoded.shape)
-    heavy_encoded = AminoAcidEncoder(max_length=heavy_len).transform(heavy)
+    light_encoded = one_hot_encoder(light, 150)
+    light_encoded = scaler.fit_transform(light_encoded.reshape(-1, light_encoded.shape[-1])).reshape(light_encoded.shape)
+    #light_encoded = AminoAcidEncoder(max_length=light_len).transform(light)
+
+    heavy_encoded = one_hot_encoder(heavy, 150)
+    heavy_encoded = scaler.fit_transform(heavy_encoded.reshape(-1, heavy_encoded.shape[-1])).reshape(heavy_encoded.shape)
+    #heavy_encoded = AminoAcidEncoder(max_length=heavy_len).transform(heavy)
+
+    test_light_encoded = one_hot_encoder(test_light, 150)
+    test_light_encoded = scaler.fit_transform(test_light_encoded.reshape(-1, test_light_encoded.shape[-1])).reshape(test_light_encoded.shape)
+
+    test_heavy_encoded = one_hot_encoder(test_heavy, 150)
+    test_heavy_encoded = scaler.fit_transform(test_heavy_encoded.reshape(-1, test_heavy_encoded.shape[-1])).reshape(test_heavy_encoded.shape)
+
 
     history = autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
-                         epochs=200, batch_size=32, validation_split=0.2, shuffle = True)
+                         epochs=2, batch_size=32, validation_split=0.2, shuffle = True)
+
+
 
     plt.figure(figsize=(10, 4))
     plt.plot(autoencoder.history.history['val_loss'], label='Validation loss')
@@ -243,4 +256,10 @@ if __name__ == '__main__':
     plt.legend()
     plt.grid()
     plt.tight_layout()
-    plt.savefig('loss_output.png')
+    plt.savefig('loss_output_testing.png')
+
+    print("Evaluate on test data")
+    results = autoencoder.evaluate([test_light_encoded, test_heavy_encoded], [test_light_encoded, test_heavy_encoded], batch_size=32)
+
+    print (results)
+    print(dict(zip(autoencoder.metrics_names, results)))

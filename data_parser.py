@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def remove_special_chars(seq_list):
         chars = ' -?'
@@ -29,9 +30,35 @@ def data_extract(data_file):
 
         return l_seq_list, h_seq_list, names, source
 
+def data_extract_Jain(data_file):
+    df = pd.read_csv(data_file)
+    df.drop([0, 4])
+    df.rename(columns={'VL': 'Light'}, inplace=True)
+    df.rename(columns={'VH': 'Heavy'}, inplace=True)
+    df.rename(columns={"Fab Tm by DSF (°C)": 'Temp'}, inplace=True)
+
+    light_seq = df['Light'].values.tolist()
+    heavy_seq = df['Heavy'].values.tolist()
+    temp = df['Temp'].values.tolist()
+
+    # l_seq_list = remove_special_chars(light_seq)
+    # h_seq_list = remove_special_chars(heavy_seq)
+
+    return light_seq, heavy_seq, temp
 
 def data_extract_abY(data_file):
     df = pd.read_csv(data_file)
+
+    df['light'].replace('', np.nan, inplace=True)
+    df['heavy'].replace('', np.nan, inplace=True)
+
+    df = df.dropna()
+
+    df = df[(df.organism == 'mus musculus') | (df.organism == 'homo sapiens')]
+    df["heavy_length"] = df["heavy"].str.len()
+    df["light_length"] = df["light"].str.len()
+
+    df = df[(df.heavy_length <= 150) & (df.heavy_length >= 80) & (df.light_length <= 150) & (df.light_length >= 80)]
 
     light_seq = df['light'].values.tolist()
     heavy_seq = df['heavy'].values.tolist()
@@ -42,9 +69,9 @@ def data_extract_abY(data_file):
 
 
 if __name__ == '__main__':
-        light, heavy, source, name = data_extract("./data/AbFv_animal_source.csv")
-        print (type(heavy))
+        #light, heavy, source, name = data_extract("./data/AbFv_animal_source.csv")
+        #print (type(heavy))
 
-        light, heavy, source, name = data_extract_abY("./data/abYsis_data.csv")
-        print(type(heavy))
-
+        light, heavy,temp = data_extract_Jain("./data/Jain_Ab_dataset.csv")
+        for x in heavy:
+            print (len(x))

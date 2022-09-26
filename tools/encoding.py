@@ -18,6 +18,7 @@ def one_hot_encoder(sequences, max_length):
     """
     one_hot_seq = np.zeros((len(sequences), max_length, len(amino_acids)), dtype='int')
 
+
     for x, seq in enumerate(sequences):
         for y, aa in enumerate(seq):
             loc = amino_acids.find(aa)
@@ -26,26 +27,20 @@ def one_hot_encoder(sequences, max_length):
     return one_hot_seq
 
 if __name__ == '__main__':
-    light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
-    print(type(heavy[1]))
+    #light, heavy, source, name = dp.data_extract('../data/AbFv_animal_source.csv')
+    #print(type(heavy[1]))
     #VH_encoded = one_hot_encoder(heavy,140)
     #print (VH_encoded[700])
 
 
     light, heavy, source, name = dp.data_extract_abY("../data/abYsis_data.csv")
-    print(type(heavy[1]))
-    #VH_encoded = one_hot_encoder(heavy, 140)
-    #print(VH_encoded[700])
 
-    #g = np.zeros((len(heavy), 140, len(amino_acids)), dtype='int')
-    #print(g[20,1,4])
-
-
+    g = np.zeros((len(heavy), 150, 20), dtype='int')
 
     for x, seq in enumerate(heavy):
-        print (x)
-    #    for y, aa in enumerate(seq):
-    #        loc = amino_acids.find(aa)
-    #        if loc > 0:
-    #                g[x, y, loc] = 1
-    #print(g)
+        print(x)
+        for y, aa in enumerate(seq):
+            loc = amino_acids.find(aa)
+            if loc > 0:
+                    g[x, y, loc] = 1
+    print(g)
