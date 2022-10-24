@@ -6,9 +6,7 @@ from IPython.display import SVG
 from tensorflow.keras.utils import plot_model
 import pydot
 import graphviz
-
 from keras.utils.vis_utils import model_to_dot
-
 import sklearn as sk
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
@@ -130,6 +128,15 @@ def get_loss(mask_value):
     return masked_mse
 
 
+
+def accuracy(y_true, y_pred):
+    mask = K.all(K.equal(y_true, np.zeros(len(aa_order), dtype='int')), axis=-1)
+    mask = 1 - K.cast(mask, K.floatx())
+    return K.sum((K.cast(K.equal(K.cast(K.argmax(y_true, axis=-1), 'float32'),
+                                 K.cast(K.argmax(y_pred, axis=-1), 'float32')),
+                                'float32') * mask)) / K.sum(mask)
+
+
 def autoencoder_Titan(input_shape, compile = True):
 
     """
@@ -203,10 +210,13 @@ def autoencoder_Titan(input_shape, compile = True):
     encoder_model = keras.models.Model(inputs=[light_input, heavy_input], outputs=code)
 
     if compile:
-        #mse_loss = tf.keras.losses.MeanSquaredError(reduction=ReductionV2AUTO, name='mean_squared_error')
+
         mask_mse_loss = get_loss(0)
-        #masked_mse = get_loss(0)
-        autoencoder.compile(optimizer=tf.keras.optimizers.Adamax(), loss=mask_mse_loss, metrics=['acc'])
+
+
+        #masked_categorical_crossentropy = get_loss(np.zeros(len(aa_order)))
+        autoencoder.compile(optimizer=tf.keras.optimizers.Adamax(), loss=get_loss(0), metrics=[accuracy])
+
 
     return encoder_model, autoencoder
 
@@ -224,19 +234,16 @@ if __name__ == '__main__':
     #plot_model(autoencoder,show_shapes = True, to_file='model.png')
     #SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
 
-
-
     light, heavy, source, name = dp.data_extract_abY('../data/abYsis_data.csv')
 
     test_light, test_heavy, tm = dp.data_extract_Jain('../data/Jain_Ab_dataset.csv')
 
     light_encoded = one_hot_encoder(light, 150)
     light_encoded = scaler.fit_transform(light_encoded.reshape(-1, light_encoded.shape[-1])).reshape(light_encoded.shape)
-    #light_encoded = AminoAcidEncoder(max_length=light_len).transform(light)
 
     heavy_encoded = one_hot_encoder(heavy, 150)
     heavy_encoded = scaler.fit_transform(heavy_encoded.reshape(-1, heavy_encoded.shape[-1])).reshape(heavy_encoded.shape)
-    #heavy_encoded = AminoAcidEncoder(max_length=heavy_len).transform(heavy)
+
 
     test_light_encoded = one_hot_encoder(test_light, 150)
     test_light_encoded = scaler.fit_transform(test_light_encoded.reshape(-1, test_light_encoded.shape[-1])).reshape(test_light_encoded.shape)
@@ -246,7 +253,7 @@ if __name__ == '__main__':
 
 
     history = autoencoder.fit([light_encoded, heavy_encoded], [light_encoded, heavy_encoded],
-                         epochs=2, batch_size=32, validation_split=0.2, shuffle = True)
+                         epochs=1000, batch_size=32, validation_split=0.2, shuffle = True)
 
 
 
