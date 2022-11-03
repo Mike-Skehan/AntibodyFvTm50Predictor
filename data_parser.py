@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 def remove_special_chars(seq_list):
-        chars = ' -?'
+        chars = ' -?BJOUXZ'
         new_list = []
         for seq in seq_list:
             for char in chars:
@@ -64,6 +64,9 @@ def data_extract_abY(data_file):
     heavy_seq = df['heavy'].values.tolist()
     names     = df['id'].values.tolist()
     source    = df['organism'].values.tolist()
+
+    light_seq = remove_special_chars(light_seq)
+    heavy_seq = remove_special_chars(heavy_seq)
 
     return light_seq, heavy_seq, source, names
 
