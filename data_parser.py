@@ -41,8 +41,8 @@ def data_extract_Jain(data_file):
     heavy_seq = df['Heavy'].values.tolist()
     temp = df['Temp'].values.tolist()
 
-    # l_seq_list = remove_special_chars(light_seq)
-    # h_seq_list = remove_special_chars(heavy_seq)
+    light_seq = remove_special_chars(light_seq)
+    heavy_seq = remove_special_chars(heavy_seq)
 
     return light_seq, heavy_seq, temp
 
