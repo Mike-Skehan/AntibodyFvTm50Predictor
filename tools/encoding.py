@@ -32,6 +32,11 @@ def one_hot_encoder(sequences, max_length):
                     one_hot_seq[x, y, loc] = 1
     return one_hot_seq
 
+def concat_seq(light_list,heavy_list):
+    comb = [m + str(n) for m, n in zip(light_list, heavy_list)]
+
+    return comb
+
 def seq2vec(seq_list):
 
     """
@@ -41,21 +46,17 @@ def seq2vec(seq_list):
     :return             : amino acid sequences encoded into a 100D array using .
     """
 
-    pv = biovec.models.load_protvec('./swissprot-reviewed-protvec.model')
-    light_vec = []
+    pv = biovec.models.load_protvec('/Users/michaelskehan/git/AntibodyFvTm50Predictor/tools/swissprot-reviewed-protvec.model')
+    seq_vec = []
     for seq in seq_list:
         vec = sum(pv.to_vecs(seq))
-        light_vec.append(vec)
-    return light_vec
-
-
+        seq_vec.append(vec)
+    array_vec = np.vstack(seq_vec)
+    return array_vec
 
 if __name__ == '__main__':
 
     light, heavy, name, source = dp.data_extract_abY('../data/abYsis_data.csv')
-
-    list_vec = seq2vec(light)
-    array_vec = np.vstack(list_vec)
 
     X = array_vec
     X_embedded = TSNE(n_components=2, learning_rate='auto',

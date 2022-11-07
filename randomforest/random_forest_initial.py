@@ -6,87 +6,74 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.datasets import make_regression
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
-
+import data_parser as dp
+import tools.encoding as encoding
+from sklearn.manifold import TSNE
+from scipy import stats
 
 sys.path.insert(0,"../data/")
 sys.path.insert(0,"../")
+sys.path.insert(0,"../tools")
 
-amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
+if __name__ == '__main__':
 
-def data_extract_Jain(data_file):
-    df = pd.read_csv(data_file)
-    df.drop([0, 4])
-    df.rename(columns={'VL': 'Light'}, inplace=True)
-    df.rename(columns={'VH': 'Heavy'}, inplace=True)
-    df.rename(columns={"Fab Tm by DSF (°C)": 'Temp'}, inplace=True)
+    light, heavy, temp = dp.data_extract_Jain('../data/Jain_Ab_dataset.csv')
 
-    light_seq = df['Light'].values.tolist()
-    heavy_seq = df['Heavy'].values.tolist()
-    temp = df['Temp'].values.tolist()
+    concat_seq = encoding.concat_seq(light, heavy)
+    Y = temp
 
-    # l_seq_list = remove_special_chars(light_seq)
-    # h_seq_list = remove_special_chars(heavy_seq)
+    protvec_array = encoding.seq2vec(concat_seq)
+    X = TSNE(n_components=50, learning_rate='auto', init='random', perplexity=30,
+                      method='exact').fit_transform(protvec_array)
 
-    return light_seq, heavy_seq, temp
+# Number of trees in random forest
+    n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
+# Number of features to consider at every split
+    max_features = [1.0, 'sqrt']
+# Maximum number of levels in tree
+    max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+    max_depth.append(None)
+# Minimum number of samples required to split a node
+    min_samples_split = [2, 5, 10]
+# Minimum number of samples required at each leaf node
+    min_samples_leaf = [1, 2, 4]
+# Method of selecting samples for training each tree
+    bootstrap = [True, False]
 
-def one_hot_encoder(sequences, max_length):
+    random_grid = {'n_estimators': n_estimators,
+                'max_features': max_features,
+                'max_depth': max_depth,
+                'min_samples_split': min_samples_split,
+                'min_samples_leaf': min_samples_leaf,
+                'bootstrap': bootstrap}
 
-    """
-    General info
-    :param sequences    : list of Fv amino acid sequences.
-    :param max_length   : maximum sequence length of Fv amino acid sequence.
-    :return             : amino acid sequences encoded in the one hot form.
-    """
-    one_hot_seq = np.zeros((len(sequences), max_length, len(amino_acids)), dtype='int')
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.1)
 
-    for x, seq in enumerate(sequences):
-        for y, aa in enumerate(seq):
-            loc = amino_acids.find(aa)
-            if loc > 0:
-                    one_hot_seq[x, y, loc] = 1
-    return one_hot_seq
+    search_start = time()
 
-light, heavy, temp = data_extract_Jain('../data/Jain_Ab_dataset.csv')
+    regr = RandomForestRegressor()
 
-concated = [''.join(z) for z in zip(heavy, light)]
+    rf_random = RandomizedSearchCV(estimator=regr,
+                                   param_distributions=random_grid, n_iter=100,
+                                   cv=3, verbose=2, random_state=42, n_jobs=-1)
 
-encoded = one_hot_encoder(concated, 250)
-newarray = encoded.reshape((np.shape(encoded)[0]),(np.shape(encoded)[1]* np.shape(encoded)[2]))
-print(np.shape(newarray))
+    search_end = time()
 
-max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
-max_depth.append(None)
+    search_duration = search_end-search_start
 
-random_grid = {'n_estimators': [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)],
-               'max_features': [1, 'sqrt'],
-               'max_depth': max_depth,
-               'min_samples_split': [2, 5, 10],
-               'min_samples_leaf': [1, 2, 4],
-               'bootstrap': [True, False]}
+    rf_random.fit(x_train, y_train)
 
-x_train, x_test, y_train, y_test = train_test_split(newarray, temp)
+    def evaluate(model, test_features, test_labels):
+        predictions = model.predict(test_features)
+        errors = abs(predictions - test_labels)
+        r2 = stats.pearsonr(predictions, test_labels)
+        print('Model Performance')
+        print('Average Error: {:0.4f} degrees.'.format(np.mean(errors)))
+        print('Pearson Coeff: {:0.2f}'.format(r2[0]))
 
-search_start = time()
+        return r2[0]
 
-rf = RandomForestRegressor()
+    best_random = rf_random.best_estimator_
+    random_accuracy = evaluate(best_random, x_test, y_test)
 
-rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)# Fit the random search model
-rf_random.fit(x_train, y_train)
-
-search_end = time()
-
-search_duration = search_end-search_start
-
-print('Best params:', rf_random.best_params_)
-print('Best score: ', f'{rf_random.best_score_:4.3f}')
-print(f'Search time: {search_duration:3.1f} secs')
-best_params = rf_random.best_params_
-
-randmf = RandomForestRegressor(**best_params)
-randmf.fit(x_train,y_train)
-
-y_pred_rf1 = pd.DataFrame( { "actual": y_test,
-"predicted_prob": randmf.predict((x_test)),'score': randmf.score(x_test,y_test)})
-
-print(y_pred_rf1)
-
+    print (random_accuracy)
