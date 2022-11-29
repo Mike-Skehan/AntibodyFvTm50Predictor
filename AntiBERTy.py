@@ -1,0 +1,15 @@
+from igfold import IgFoldRunner
+
+sequences = {
+    "H": "EVQLVQSGPEVKKPGTSVKVSCKASGFTFMSSAVQWVRQARGQRLEWIGWIVIGSGNTNYAQKFQERVTITRDMSTSTAYMELSSLRSEDTAVYYCAAPYCSSISCNDGFDIWGQGTMVTVS",
+    "L": "DVVMTQTPFSLPVSLGDQASISCRSSQSLVHSNGNTYLHWYLQKPGQSPKLLIYKVSNRFSGVPDRFSGSGSGTDFTLKISRVEAEDLGVYFCSQSTHVPYTFGGGTKLEIK"
+}
+
+igfold = IgFoldRunner()
+emb = igfold.embed(
+    sequences=sequences, # Antibody sequences
+)
+
+print(type(emb))
+
+berty = emb.bert_embs # Embeddings from AntiBERTy final hidden layer (dim: 1, L, 512)
