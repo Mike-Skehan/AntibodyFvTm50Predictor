@@ -71,6 +71,25 @@ def data_extract_abY(data_file):
     return light_seq, heavy_seq, source, names
 
 
+def parse_nor_data(data_file):
+    df = pd.read_csv(northey_data, delimiter='|')
+    df.columns = df.columns.str.replace(' ', '')
+    df = df.drop([0, 69])
+    df['tm'] = df['tm'].str.replace(' ', '')
+    df['tm'] = pd.to_numeric(df['tm'])
+    df['sd'] = df['sd'].str.replace(' ', '')
+    df['sd'] = pd.to_numeric(df['sd'])
+    df['heavy'] = df['heavy'].str.replace(' ', '')
+    df['heavy'] = df['heavy'].str.replace(' ', '')
+    df['heavy'] = df['heavy'].str.replace(' ', '')
+    df['tm'].replace('', np.nan, inplace=True)
+    df = df.dropna()
+    df = df.reset_index()
+    df = df.drop('index', axis=1)
+    df2 = df.drop('sd', axis=1)
+    return df2.to_csv('/CleanedNortheyTmData.csv')
+
+
 if __name__ == '__main__':
         #light, heavy, source, name = data_extract("./data/AbFv_animal_source.csv")
         #print (type(heavy))
