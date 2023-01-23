@@ -7,6 +7,8 @@ import pandas as pd
 from sklearn.model_selection import cross_validate
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RandomizedSearchCV
 
 sys.path.insert(0, "../data/")
 sys.path.insert(0, "../")
@@ -42,38 +44,14 @@ random_grid = {'n_estimators': n_estimators,
                'min_samples_leaf': min_samples_leaf,
                'bootstrap': bootstrap}
 
+cv = 5
+
 regr = RandomForestRegressor(random_state=0)
 
+rf_random = RandomizedSearchCV(estimator=regr,
+                               param_distributions=random_grid, n_iter=100,
+                               cv=3, verbose=2, n_jobs=-1)
 
-def cross_validation(model, _X, _y, _cv=5):
-    '''Function to perform 5 Folds Cross-Validation
-     Parameters
-     ----------
-    model: Python Class, default=None
-            This is the machine learning algorithm to be used for training.
-    _X: array
-         This is the matrix of features.
-    _y: array
-         This is the target variable.
-    _cv: int, default=5
-        Determines the number of folds for cross-validation.
-     Returns
-     -------
-     The function returns a dictionary containing the metrics 'accuracy', 'precision',
-     'recall', 'f1' for both training set and validation set.
-    '''
-    _scoring = ['accuracy', 'precision', 'recall', 'f1']
+scores = cross_val_score(rf_random, X, Y, scoring='r2', cv=cv, n_jobs=-1)
 
-    results = cross_validate(estimator=model,
-                             X=_X,
-                             y=_y,
-                             cv=_cv,
-                             scoring='accuracy',
-                             return_train_score=True)
-
-    return results
-
-
-decision_tree_result = cross_validation(regr, X, Y, 5)
-
-print(decision_tree_result)
+print(scores)
