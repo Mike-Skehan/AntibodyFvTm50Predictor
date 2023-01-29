@@ -1,12 +1,10 @@
-import pandas as pd
 import numpy as np
 import sys
 from time import time
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.datasets import make_regression
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
-import data_parser as dp
+from tools import data_parser as dp
 import tools.encoding as encoding
 from sklearn.manifold import TSNE
 from scipy import stats

@@ -2,15 +2,8 @@ from keras import layers as L
 from keras import backend as K
 import keras
 import tensorflow as tf
-from IPython.display import SVG
-from tensorflow.keras.utils import plot_model
-import pydot
-import graphviz
-from keras.utils.vis_utils import model_to_dot
-import sklearn as sk
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
 
 
@@ -19,7 +12,7 @@ os.environ['CUDA_VISIBLE_DEVICES']='0'
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
 
 from tools.encoding import one_hot_encoder
-import data_parser as dp
+from tools import data_parser as dp
 import sys
 
 sys.path.insert(0,"../data/")

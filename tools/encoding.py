@@ -1,5 +1,5 @@
 import numpy as np
-import data_parser as dp
+from tools import data_parser as dp
 import sys
 import biovec
 from sklearn.manifold import TSNE

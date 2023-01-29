@@ -1,6 +1,6 @@
 from igfold import IgFoldRunner
 import torch
-import data_parser as dp
+from tools import data_parser as dp
 import pandas as pd
 
 igfold = IgFoldRunner()

@@ -1,17 +1,10 @@
-from sklearn.model_selection import train_test_split
-import data_parser as dp
 import sys
-from sklearn.manifold import TSNE
 from scipy import stats
 import pandas as pd
-from sklearn.model_selection import cross_validate
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
-from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import RandomizedSearchCV
-import time
 from sklearn.metrics import mean_absolute_error
-from statistics import mean
 import joblib
 
 sys.path.insert(0, "../data/")
@@ -54,7 +47,9 @@ def compare_to_avg(model, test_features, test_labels):
         avg_mae     = eval_avg(test_labels)
         improvement = ((avg_mae-model_mae[0])/avg_mae)*100
     
-        return 'Model error  : {:0.2f} C\nAverage error: {:0.2f} C\nImprovement  : {:0.2f}%'.format(model_mae[0], avg_mae, improvement)
+        return 'Model error  : {:0.2f} C\nAverage error: {:0.2f} C\nImprovement  : {:0.2f}%'.format(model_mae[0],
+                                                                                                    avg_mae,
+                                                                                                    improvement)
     
 
 def save_result(model, dataset, model_name, model_loc, pearson_result):

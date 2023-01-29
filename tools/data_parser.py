@@ -94,6 +94,6 @@ if __name__ == '__main__':
         #light, heavy, source, name = data_extract("./data/AbFv_animal_source.csv")
         #print (type(heavy))
 
-        light, heavy,temp = data_extract_Jain("./data/Jain_Ab_dataset.csv")
+        light, heavy,temp = data_extract_Jain("../data/Jain_Ab_dataset.csv")
         for x in heavy:
             print (len(x))

@@ -3,17 +3,13 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import matplotlib.pyplot as plt
-import data_parser as dp
+from tools import data_parser as dp
 import sys
 from tools.encoding import seq2vec
 from tensorflow.keras import layers
-import seaborn as sns
 from IPython.display import SVG
 from tensorflow.keras.utils import plot_model
-import pydot
-import graphviz
 from keras.utils.vis_utils import model_to_dot
-import sklearn as sk
 
 os.environ['CUDA_VISIBLE_DEVICES']='0'
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
