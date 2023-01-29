@@ -11,3 +11,18 @@ def rf_plot(x_test, y_test, model):
     plt.ylabel('Predictions', fontsize=15)
     plt.axis('equal')
     plt.show()
+
+def avg_plot (y_test):
+    plt.figure(figsize=(10, 10))
+    avg_temp = np.mean(test_labels)
+    avg_list =[]
+    for i in range(len(test_labels)):
+        avg_list.append(avg_temp)
+    plt.scatter(y_test, avg_list, c='crimson')
+    p1 = max(max(avg_list), max(y_test))
+    p2 = min(min(avg_list), min(y_test))
+    plt.plot([p1, p2], [p1, p2], 'b-')
+    plt.xlabel('True Values', fontsize=15)
+    plt.ylabel('Predictions', fontsize=15)
+    plt.axis('equal')
+    plt.show()
