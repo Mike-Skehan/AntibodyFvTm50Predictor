@@ -54,6 +54,8 @@ def seq2vec(seq_list):
     array_vec = np.vstack(seq_vec)
     return array_vec
 
+
+
 if __name__ == '__main__':
 
     light, heavy, name, source = dp.data_extract_abY('../data/abYsis_data.csv')
