@@ -15,7 +15,7 @@ sys.path.insert(0,"../tools")
 
 if __name__ == '__main__':
 
-    light, heavy, temp = dp.data_extract_Jain('../data/Jain_Ab_dataset.csv')
+    light, heavy, temp = dp.data_extract('../data/Jain_Ab_dataset.csv')
 
     concat_seq = encoding.concat_seq(light, heavy)
     Y = temp

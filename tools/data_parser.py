@@ -1,38 +1,29 @@
 import pandas as pd
 import numpy as np
 
-def remove_special_chars(seq_list):
-        chars = ' -?BJOUXZ'
-        new_list = []
-        for seq in seq_list:
-            for char in chars:
-                seq = seq.replace(char,'')
-            new_list.append(seq)
 
-        return new_list
+def remove_special_chars(seq_list):
+    """
+    :param seq_list:    list of aminos acid sequence strings.
+    :return:            list of original strings with characters removed.
+    """
+    chars = ' -?BJOUXZ'
+    new_list = []
+    for seq in seq_list:
+        for char in chars:
+            seq = seq.replace(char, '')
+        new_list.append(seq)
+
+    return new_list
 
 
 def data_extract(data_file):
-        df = pd.read_csv(data_file)
+    """
+    :param data_file:   csv file containing light sequences, heavy sequences and their tm50 values.
+    :return:            lists of light sequences, heavy sequences and tm50 values.
+    """
 
-        df.rename(columns = {' Light':'Light'}, inplace = True)
-        df.rename(columns = {' Heavy':'Heavy'}, inplace = True)
-
-        light_seq = df['Light'].values.tolist()
-        heavy_seq = df['Heavy'].values.tolist()
-        names = df['Name'].values.tolist()
-        source = df['Source'].values.tolist()
-
-        l_seq_list = remove_special_chars(light_seq)
-        h_seq_list = remove_special_chars(heavy_seq)
-        source_list = remove_special_chars(source)
-
-
-        return l_seq_list, h_seq_list, names, source
-
-def data_extract_Jain(data_file):
     df = pd.read_csv(data_file)
-    df.drop([0, 4])
     df.rename(columns={'VL': 'Light'}, inplace=True)
     df.rename(columns={'VH': 'Heavy'}, inplace=True)
     df.rename(columns={"Fab Tm by DSF (°C)": 'Temp'}, inplace=True)
@@ -46,7 +37,14 @@ def data_extract_Jain(data_file):
 
     return light_seq, heavy_seq, temp
 
+
 def data_extract_abY(data_file):
+    """
+
+    :param data_file:   csv file containing light sequences, heavy sequences, their scientific names and species.
+    :return:            lists of light sequences, heavy sequences, names and species, filtered for mouse & human,
+                        less than 150 amino acids
+    """
     df = pd.read_csv(data_file)
 
     df['light'].replace('', np.nan, inplace=True)
@@ -62,8 +60,8 @@ def data_extract_abY(data_file):
 
     light_seq = df['light'].values.tolist()
     heavy_seq = df['heavy'].values.tolist()
-    names     = df['id'].values.tolist()
-    source    = df['organism'].values.tolist()
+    names = df['id'].values.tolist()
+    source = df['organism'].values.tolist()
 
     light_seq = remove_special_chars(light_seq)
     heavy_seq = remove_special_chars(heavy_seq)
@@ -72,7 +70,7 @@ def data_extract_abY(data_file):
 
 
 def parse_nor_data(data_file):
-    df = pd.read_csv(northey_data, delimiter='|')
+    df = pd.read_csv(data_file, delimiter='|')
     df.columns = df.columns.str.replace(' ', '')
     df = df.drop([0, 69])
     df['tm'] = df['tm'].str.replace(' ', '')
@@ -88,12 +86,3 @@ def parse_nor_data(data_file):
     df = df.drop('index', axis=1)
     df2 = df.drop('sd', axis=1)
     return df2.to_csv('/CleanedNortheyTmData.csv')
-
-
-if __name__ == '__main__':
-        #light, heavy, source, name = data_extract("./data/AbFv_animal_source.csv")
-        #print (type(heavy))
-
-        light, heavy,temp = data_extract_Jain("../data/Jain_Ab_dataset.csv")
-        for x in heavy:
-            print (len(x))

@@ -7,6 +7,14 @@ igfold = IgFoldRunner()
 
 
 def seq2BERTy(heavy, light):
+
+    """
+
+    :param heavy:   AntibodyFv heavy chain sequence. string
+    :param light:   AntibodyFv light chain sequence. string
+    :return:        512 feature dataset encoded using antiBERTy on concatenated sequences.
+    """
+
     embed_list = []
     length = len(light)
 
@@ -29,7 +37,7 @@ def seq2BERTy(heavy, light):
 
 
 if __name__ == '__main__':
-    light, heavy, temp = dp.data_extract_Jain("./data/combined_datasets.csv")
+    light, heavy, temp = dp.data_extract("./data/combined_datasets.csv")
     tensor = seq2BERTy(heavy, light)
     X = pd.DataFrame(tensor.detach().numpy())
     X.to_csv('combined_bert_df.csv', index=0)
