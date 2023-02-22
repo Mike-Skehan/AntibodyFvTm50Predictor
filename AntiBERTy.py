@@ -31,13 +31,19 @@ def seq2BERTy(heavy, light):
         encoded = torch.sum(berty, dim=1)
 
         embed_list.append(encoded)
-        final = torch.cat(embed_list, dim=0)
+    final = torch.cat(embed_list, dim=0)
 
     return final
 
 
-if __name__ == '__main__':
-    light, heavy, temp = dp.data_extract("./data/combined_datasets.csv")
+def bert_csv(data_file):
+    """
+
+    :param data_file: csv file containing Fv antibody sequences and Tm50 data
+    :return: csv file containing antiBERTy encoded concatenated sequences.
+    """
+    light, heavy, temp = dp.data_extract(data_file)
     tensor = seq2BERTy(heavy, light)
-    X = pd.DataFrame(tensor.detach().numpy())
-    X.to_csv('combined_bert_df.csv', index=0)
+    encoded_seq = pd.DataFrame(tensor.detach().numpy())
+
+    return encoded_seq.to_csv('combined_bert_df.csv', index=False)
