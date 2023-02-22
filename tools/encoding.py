@@ -7,6 +7,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+# TODO:
 
 sys.path.insert(0,"../data/")
 sys.path.insert(0,"../")
@@ -24,7 +25,6 @@ def one_hot_encoder(sequences, max_length):
     """
     one_hot_seq = np.zeros((len(sequences), max_length, len(amino_acids)), dtype='int')
 
-
     for x, seq in enumerate(sequences):
         for y, aa in enumerate(seq):
             loc = amino_acids.find(aa)
@@ -32,7 +32,14 @@ def one_hot_encoder(sequences, max_length):
                     one_hot_seq[x, y, loc] = 1
     return one_hot_seq
 
+
 def concat_seq(light_list,heavy_list):
+    """
+
+    :param light_list   : list of light Fv amino acid sequences
+    :param heavy_list   : list of heavy Fv amino acid sequences
+    :return             : concatenated sequences.
+    """
     comb = [m + str(n) for m, n in zip(light_list, heavy_list)]
 
     return comb
@@ -46,7 +53,8 @@ def seq2vec(seq_list):
     :return             : amino acid sequences encoded into a 100D array using .
     """
 
-    pv = biovec.models.load_protvec('/Users/michaelskehan/git/AntibodyFvTm50Predictor/tools/swissprot-reviewed-protvec.model')
+    pv = biovec.models.load_protvec(
+        '/Users/michaelskehan/git/AntibodyFvTm50Predictor/tools/swissprot-reviewed-protvec.model')
     seq_vec = []
     for seq in seq_list:
         vec = sum(pv.to_vecs(seq))
