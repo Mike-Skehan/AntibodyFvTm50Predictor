@@ -70,6 +70,13 @@ def data_extract_abY(data_file):
 
 
 def parse_nor_data(data_file):
+    """
+
+        :param data_file:   Postgre SQL file output containing light sequences, heavy sequences, Tm50 and sd. Separated
+                            by |
+        :return:            csv file containing light sequences, heavy sequences, Tm50 values
+        """
+
     df = pd.read_csv(data_file, delimiter='|')
     df.columns = df.columns.str.replace(' ', '')
     df = df.drop([0, 69])
