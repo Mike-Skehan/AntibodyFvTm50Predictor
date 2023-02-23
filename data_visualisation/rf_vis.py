@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def rf_plot(x_test, y_test, model):
@@ -12,11 +13,12 @@ def rf_plot(x_test, y_test, model):
     plt.axis('equal')
     plt.show()
 
-def avg_plot (y_test):
+
+def avg_plot(y_test):
     plt.figure(figsize=(10, 10))
-    avg_temp = np.mean(test_labels)
-    avg_list =[]
-    for i in range(len(test_labels)):
+    avg_temp = np.mean(y_test)
+    avg_list = []
+    for i in range(len(y_test)):
         avg_list.append(avg_temp)
     plt.scatter(y_test, avg_list, c='crimson')
     p1 = max(max(avg_list), max(y_test))
@@ -26,3 +28,4 @@ def avg_plot (y_test):
     plt.ylabel('Predictions', fontsize=15)
     plt.axis('equal')
     plt.show()
+    
