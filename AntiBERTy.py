@@ -59,5 +59,6 @@ if __name__ == '__main__':
 
     light, heavy, name, species = dp.data_extract_abY('./data/abYsis_data.csv')
 
-    sequence_generator(heavy, light)
-    seq2BERTy(heavy,light)
+    tensor = seq2BERTy(heavy, light)
+    encoded_seq = pd.DataFrame(tensor.detach().numpy())
+    encoded_seq.to_csv('./data/abYsis_bert_df.csv', index=False)

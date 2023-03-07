@@ -3,6 +3,13 @@ import numpy as np
 
 
 def rf_plot(x_test, y_test, model):
+    """
+
+    :param x_test: test features
+    :param y_test: test labels
+    :param model: random forest regression model
+    :return:
+    """
     plt.figure(figsize=(10, 10))
     plt.scatter(y_test, model.predict(x_test), c='crimson')
     p1 = max(max(model.predict(x_test)), max(y_test))
@@ -11,7 +18,7 @@ def rf_plot(x_test, y_test, model):
     plt.xlabel('True Values', fontsize=15)
     plt.ylabel('Predictions', fontsize=15)
     plt.axis('equal')
-    plt.show()
+    plt.figure.savefig()
 
 
 def avg_plot(y_test):
