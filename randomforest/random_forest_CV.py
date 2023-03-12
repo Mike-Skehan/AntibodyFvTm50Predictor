@@ -43,8 +43,8 @@ def eval_model(model, x_test, y_test):
     predictions = model.predict(x_test)
     errors = mean_absolute_error(y_test, predictions)
     r2 = stats.pearsonr(predictions, y_test)
-    print('Model Performance\n---------------------')
-    print('Average Error: {:0.2f} degrees.'.format(np.mean(errors)))
+    #('Model Performance\n---------------------\n')
+    #print('Average Error: {:0.2f} degrees.'.format(np.mean(errors)))
 
     return np.mean(errors), r2[0] 
 
@@ -92,7 +92,7 @@ def save_result(model, dataset, model_name, model_loc, pearson_result):
     """
 
     try:
-        df   = pd.read_csv('results.csv')
+        df   = pd.read_csv('../models/results.csv')
     except FileNotFoundError:
         df   = pd.DataFrame(columns=['Dataset', 'Model', 'Model File', 'Features File', 'MAE', 'Pearson Coeff'])
     joblib.dump(model, model_loc)
@@ -103,6 +103,6 @@ def save_result(model, dataset, model_name, model_loc, pearson_result):
         'Pearson': [pearson_result]
     }
 
-    df = df.append(new_data)
+    df = df.append(new_data,ignore_index=True)
 
-    df.to_csv('./models/results.csv', index=False)
+    df.to_csv('../models/results.csv', index=False)
