@@ -3,7 +3,7 @@ from scipy import stats
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV, cross_val_score, KFold
 from sklearn.metrics import mean_absolute_error
 import joblib
 
@@ -103,6 +103,24 @@ def save_result(model, dataset, model_name, model_loc, pearson_result):
         'Pearson': [pearson_result]
     }
 
-    df = df.append(new_data,ignore_index=True)
+    df = df.append(new_data, ignore_index=True)
 
     df.to_csv('../models/results.csv', index=False)
+
+
+def rf_kfold(X, y, params, iters, cv_num, k):
+    # Create a random forest regressor
+    rf_random = RandomizedSearchCV(estimator=RandomForestRegressor(), param_distributions=params, n_iter=iters,
+                                   cv=cv_num, verbose=2, n_jobs=-1)
+
+    # Create a k-fold cross-validator with 5 folds
+    kf = KFold(n_splits=k)
+
+    # Use cross_val_score to get the scores for each fold
+    scores = cross_val_score(rf_random.best_estimator_, X, y, cv=kf)
+
+    # Print the mean and standard deviation of the scores
+    print("Mean R-squared score:", scores.mean())
+    print("Standard deviation of R-squared scores:", scores.std())
+
+    return scores.mean(), scores.std()
