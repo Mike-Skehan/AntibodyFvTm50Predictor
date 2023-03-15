@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 from sklearn.model_selection import RandomizedSearchCV, cross_val_score, KFold
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, r2_score
 import joblib
 
 sys.path.insert(0, "../data/")
@@ -37,16 +37,15 @@ def eval_model(model, x_test, y_test):
     :param model     : random forest regression model
     :param x_test    : test features
     :param y_test    : test labels
-    :return          : model error and pearson coefficient
+    :return          : model MAE, R-squared and pearson coefficient
     """
 
     predictions = model.predict(x_test)
     errors = mean_absolute_error(y_test, predictions)
-    r2 = stats.pearsonr(predictions, y_test)
-    #('Model Performance\n---------------------\n')
-    #print('Average Error: {:0.2f} degrees.'.format(np.mean(errors)))
+    r2 = r2_score(y_test, predictions)
+    pearsonr = stats.pearsonr(y_test, predictions)
 
-    return np.mean(errors), r2[0] 
+    return np.mean(errors), r2, pearsonr
 
 
 def eval_avg(y_test):

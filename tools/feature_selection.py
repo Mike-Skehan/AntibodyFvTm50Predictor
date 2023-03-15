@@ -13,13 +13,13 @@ def feat_select(X, y, k):
     return X_new
 
 
-def rfe_select(X, y):
+def rfe_select(X, y, n_feats):
 
     # Create a non-linear model (Random Forest Regressor)
     rf = RandomForestRegressor()
 
     # Create an RFE object and specify the non-linear model to use
-    rfe = RFE(estimator=rf, n_features_to_select=10)
+    rfe = RFE(estimator=rf, n_features_to_select=n_feats)
 
     # Fit the RFE object to the data to select the best features
     rfe.fit(X, y)
