@@ -12,12 +12,12 @@ sys.path.insert(0, "../")
 sys.path.insert(0, "../tools")
 
 
-def grid_search(x_train, y_train, params, iters, cv_num):
+def random_search(x_train, y_train, params, iters, cv_num):
     """
 
     :param x_train  : training features
     :param y_train  : training labels
-    :param params   : grid search parameters
+    :param params   : random search parameters
     :param iters    : number of iteration for the search
     :param cv_num   : number of cross validations
     :return         : model with the best accuracy
