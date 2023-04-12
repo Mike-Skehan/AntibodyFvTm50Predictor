@@ -6,6 +6,17 @@ import pandas as pd
 igfold = IgFoldRunner()
 
 
+def sequence_generator(heavy, light):
+    length = len(light)
+
+    for i in range(0, length):
+        sequences = {
+            "H": heavy[i],
+            "L": light[i]
+        }
+        yield sequences
+
+
 def seq2BERTy(heavy, light):
 
     """
@@ -16,14 +27,9 @@ def seq2BERTy(heavy, light):
     """
 
     embed_list = []
-    length = len(light)
+    sequence_gen = sequence_generator(heavy, light)
 
-    for i in range(0, length):
-        sequences = {
-            "H": heavy[i],
-            "L": light[i]
-        }
-
+    for sequences in sequence_gen:
         emb = igfold.embed(
             sequences=sequences,
         )
@@ -47,3 +53,12 @@ def bert_csv(data_file):
     encoded_seq = pd.DataFrame(tensor.detach().numpy())
 
     return encoded_seq.to_csv('combined_bert_df.csv', index=False)
+
+
+if __name__ == '__main__':
+
+    light, heavy, name, species = dp.data_extract_abY('./data/abYsis_data.csv')
+
+    tensor = seq2BERTy(heavy, light)
+    encoded_seq = pd.DataFrame(tensor.detach().numpy())
+    encoded_seq.to_csv('./data/abYsis_bert_df.csv', index=False)

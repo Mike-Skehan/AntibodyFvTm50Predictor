@@ -1,0 +1,3 @@
+Dataset,Model,Model File,Pearson
+combined_bert,Random Forest Regression with GridSearchCV,../models/250123_RF.joblib,0.56
+100D_combined_bert,Random Forest Regression with GridSearchCV,../models/120323_RF.joblib,0.71

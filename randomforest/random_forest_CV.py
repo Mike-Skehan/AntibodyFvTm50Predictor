@@ -3,8 +3,8 @@ from scipy import stats
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import RandomizedSearchCV, cross_val_score, KFold
+from sklearn.metrics import mean_absolute_error, r2_score
 import joblib
 
 sys.path.insert(0, "../data/")
@@ -12,12 +12,12 @@ sys.path.insert(0, "../")
 sys.path.insert(0, "../tools")
 
 
-def grid_search(x_train, y_train, params, iters, cv_num):
+def random_search(x_train, y_train, params, iters, cv_num):
     """
 
     :param x_train  : training features
     :param y_train  : training labels
-    :param params   : grid search parameters
+    :param params   : random search parameters
     :param iters    : number of iteration for the search
     :param cv_num   : number of cross validations
     :return         : model with the best accuracy
@@ -37,16 +37,15 @@ def eval_model(model, x_test, y_test):
     :param model     : random forest regression model
     :param x_test    : test features
     :param y_test    : test labels
-    :return          : model error and pearson coefficient
+    :return          : model MAE, R-squared and pearson coefficient
     """
 
     predictions = model.predict(x_test)
     errors = mean_absolute_error(y_test, predictions)
-    r2 = stats.pearsonr(predictions, y_test)
-    print('Model Performance\n---------------------')
-    print('Average Error: {:0.2f} degrees.'.format(np.mean(errors)))
+    r2 = r2_score(y_test, predictions)
+    pearsonr = stats.pearsonr(y_test, predictions)
 
-    return np.mean(errors), r2[0] 
+    return np.mean(errors), r2, pearsonr
 
 
 def eval_avg(y_test):
@@ -92,7 +91,7 @@ def save_result(model, dataset, model_name, model_loc, pearson_result):
     """
 
     try:
-        df   = pd.read_csv('results.csv')
+        df   = pd.read_csv('../models/results.csv')
     except FileNotFoundError:
         df   = pd.DataFrame(columns=['Dataset', 'Model', 'Model File', 'Features File', 'MAE', 'Pearson Coeff'])
     joblib.dump(model, model_loc)
@@ -103,6 +102,24 @@ def save_result(model, dataset, model_name, model_loc, pearson_result):
         'Pearson': [pearson_result]
     }
 
-    df = df.append(new_data)
+    df = df.append(new_data, ignore_index=True)
 
-    df.to_csv('./models/results.csv', index=False)
+    df.to_csv('../models/results.csv', index=False)
+
+
+def rf_kfold(X, y, params, iters, cv_num, k):
+    # Create a random forest regressor
+    rf_random = RandomizedSearchCV(estimator=RandomForestRegressor(), param_distributions=params, n_iter=iters,
+                                   cv=cv_num, verbose=2, n_jobs=-1)
+
+    # Create a k-fold cross-validator with 5 folds
+    kf = KFold(n_splits=k)
+
+    # Use cross_val_score to get the scores for each fold
+    scores = cross_val_score(rf_random.best_estimator_, X, y, cv=kf)
+
+    # Print the mean and standard deviation of the scores
+    print("Mean R-squared score:", scores.mean())
+    print("Standard deviation of R-squared scores:", scores.std())
+
+    return scores.mean(), scores.std()
