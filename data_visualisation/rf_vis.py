@@ -28,4 +28,3 @@ def avg_plot(y_test):
     plt.ylabel('Predictions', fontsize=15)
     plt.axis('equal')
     plt.show()
-    
