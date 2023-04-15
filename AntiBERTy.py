@@ -98,11 +98,5 @@ if __name__ == '__main__':
     selected_features = data72.columns
 
     tensor = AntiBERTyEncoder().transform(seq)
-    tensor.columns = ['{}'.format(i) for i in range(len(tensor.columns))]
-    print(type(tensor.columns))
-    print(type(selected_features))
 
-    print(tensor[selected_features])
     # encoded_seq.to_csv('./data/abYsis_bert_df.csv', index=False)
-
-#%%
