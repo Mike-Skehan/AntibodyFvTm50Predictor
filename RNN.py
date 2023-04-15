@@ -1,52 +1,72 @@
 import numpy as np
-import pandas as pd
-from sklearn.model_selection import KFold, train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from tensorflow.keras.callbacks import History
 import matplotlib.pyplot as plt
+from sklearn.model_selection import KFold
 
 
-def rnn_regression(seq, temp, num_epochs=100, batch_size=10, test_size=0.1):
-    """
-    :param seq: sequence of amino acids
-    :param temp: temperature
-    :param num_epochs: number of epochs to train the model for
-    :param batch_size: batch size for training the model
-    :param test_size: the proportion of the dataset to include in the test split
-    :return: model MAE, R-squared and pearson coefficient
-    """
+def rnn_cv():
+    # set up the subplots
+    fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(10, 15))
+    axs = axs.flatten()
 
-    # convert seq and temp to numpy arrays
-    seq = seq.values.reshape((seq.shape[0], seq.shape[1], 1))
-    temp = np.array(temp)
+    mae_scores = []
+    r2_scores = []
+    pearsonr_scores = []
 
-    # split the data into training and testing sets
-    x_train, x_test, y_train, y_test = train_test_split(seq, temp, test_size=test_size, random_state=42)
+    # set up the k-fold cross-validation
+    kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
-    # create the model
-    model = Sequential()
-    model.add(LSTM(100, input_shape=(seq.shape[1], seq.shape[2])))
-    model.add(Dense(1))
-    model.compile(loss='mean_absolute_error', optimizer='adam')
+    for i, (train_index, test_index) in enumerate(kf.split(X)):
 
-    # fit the model
-    history = model.fit(x_train, y_train, epochs=num_epochs, batch_size=batch_size, verbose=2, validation_split=0.2)
+        X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-    # evaluate the model on the test set
-    predictions = model.predict(x_test)
-    mae = mean_absolute_error(y_test, predictions)
-    r2 = r2_score(y_test, predictions)
-    pearsonr = np.corrcoef(y_test, predictions.T)[0, 1]
+        # create the RNN model
+        X_train = X_train.values.reshape((X_train.shape[0], X_train.shape[1], 1))
+        X_test = X_test.values.reshape((X_test.shape[0], X_test.shape[1], 1))
+        y_train = np.array(y_train)
+        y_test = np.array(y_test)
+        model = Sequential()
+        model.add(LSTM(100, input_shape=(X_train.shape[1], X_train.shape[2])))
+        model.add(Dense(1))
+        model.compile(loss='mean_absolute_error', optimizer='adam')
 
-    # plot training and validation loss
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('Model Loss')
-    plt.ylabel('Loss')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Validation'], loc='upper right')
+        # fit the model
+        history = model.fit(X_train, y_train, epochs=num_epochs, batch_size=batch_size, verbose=2, validation_data=(X_test, y_test))
+
+        # evaluate the model on the test set
+        predictions = model.predict(X_test)
+        mae = mean_absolute_error(y_test, predictions)
+        r2 = r2_score(y_test, predictions)
+
+        # y_test and predictions are arrays with shape (36, 1)
+        y_test_reshaped = np.squeeze(y_test)
+        predictions_reshaped = np.squeeze(predictions)
+
+        # Calculate Pearson correlation coefficient
+        pearson, _ = pearsonr(y_test_reshaped, predictions_reshaped)
+
+        mae_scores.append(mae)
+        r2_scores.append(r2)
+        pearsonr_scores.append(pearson)
+
+        # plot training and validation loss on the appropriate subplot
+        axs[i].plot(history.history['loss'])
+        axs[i].plot(history.history['val_loss'])
+        axs[i].set_title(f'Fold {i+1} Loss')
+        axs[i].set_ylabel('Loss')
+        axs[i].set_xlabel('Epoch')
+        axs[i].legend(['Train', 'Validation'], loc='upper right')
+
+    # adjust the layout and display the plots
+    plt.tight_layout()
     plt.show()
 
-    return mae, r2, pearsonr
+    print('MAE: %.3f (%.3f)' % (np.mean(mae_scores), np.std(mae_scores)))
+    print('R2: %.3f (%.3f)' % (np.mean(r2_scores), np.std(r2_scores)))
+    print('Pearsonr: %.3f (%.3f)' % (np.mean(pearsonr_scores), np.std(pearsonr_scores)))
+
+    return model
+

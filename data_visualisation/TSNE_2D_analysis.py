@@ -12,7 +12,7 @@ def plot2d(data, source, dims=2, perpx=100):
     Array2d = df.to_numpy()
 
     X_embedded = TSNE(n_components=dims, learning_rate='auto',
-                           init = 'random', perplexity = perpx).fit_transform(Array2d)
+                           init ='random', perplexity=perpx).fit_transform(Array2d)
 
     dataset = pd.DataFrame({'Column1': X_embedded[:, 0], 'Column2': X_embedded[:, 1]})
 

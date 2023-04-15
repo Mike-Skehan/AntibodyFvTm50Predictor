@@ -1,5 +1,7 @@
 from igfold import IgFoldRunner
 import torch
+from sklearn.base import BaseEstimator, TransformerMixin
+
 from tools import data_parser as dp
 import pandas as pd
 
@@ -55,10 +57,52 @@ def bert_csv(data_file):
     return encoded_seq.to_csv('combined_bert_df.csv', index=False)
 
 
+class AntiBERTyEncoder(BaseEstimator, TransformerMixin):
+    def __init__(self):
+        self.igfold = IgFoldRunner()
+
+    @classmethod
+    def sequence_generator(cls, X):
+        heavy, light = X
+        sequences = {"H": heavy, "L": light}
+        yield sequences
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        embed_list = []
+        sequence_gen = self.sequence_generator(X)
+
+        for sequences in sequence_gen:
+            emb = self.igfold.embed(
+                sequences=sequences,
+            )
+            berty = emb.bert_embs
+            encoded = torch.sum(berty, dim=1)
+
+            embed_list.append(encoded)
+        final = torch.cat(embed_list, dim=0)
+        encoded_seq = pd.DataFrame(final.detach().numpy())
+
+
+        return encoded_seq
+
+
 if __name__ == '__main__':
 
-    light, heavy, name, species = dp.data_extract_abY('./data/abYsis_data.csv')
+    seq = ('ELQMTQSPASLAVSLGQRATISCKASQSVDYDGDSYMNWYQQKPGQPPKLLIYAASNLESGIPARFSGSGSRTDFTLTINPVETDDVATYYCQQSHEDPYTFGGGTKLEIK','LESGAELVKPGASVKLSCKASGYIFTTYWMQWVKQRPGQGLEWIGEIHPSNGLTNYNEKFKSKATLTVDKSSTTAYMQLSSLTSEDSAVYYCSKGRELGRFAYWGQGTLVTVSA')
 
-    tensor = seq2BERTy(heavy, light)
-    encoded_seq = pd.DataFrame(tensor.detach().numpy())
-    encoded_seq.to_csv('./data/abYsis_bert_df.csv', index=False)
+    data72 = pd.read_csv('./data/combined_datasets_72.csv')
+
+    selected_features = data72.columns
+
+    tensor = AntiBERTyEncoder().transform(seq)
+    tensor.columns = ['{}'.format(i) for i in range(len(tensor.columns))]
+    print(type(tensor.columns))
+    print(type(selected_features))
+
+    print(tensor[selected_features])
+    # encoded_seq.to_csv('./data/abYsis_bert_df.csv', index=False)
+
+#%%
