@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import uniform
 from sklearn.model_selection import RandomizedSearchCV
 import statistics as st
+import pandas as pd
 
 
 def svm_cv(X, y):
@@ -19,6 +20,11 @@ def svm_cv(X, y):
     """
 
     rand = 28
+
+    y = pd.DataFrame(y)
+    y = y.values.ravel()
+
+    X.columns = ['{}'.format(i) for i in range(len(X.columns))]
 
     # set up train and test sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=rand)
@@ -40,8 +46,8 @@ def svm_cv(X, y):
 
     for i, (train_index, val_index) in enumerate(kf.split(X_train)):
 
-        k_X_train, X_val    = X.iloc[train_index], X.iloc[val_index]
-        k_y_train, y_val    = y.iloc[train_index], y.iloc[val_index]
+        k_X_train, X_val    = X_train.iloc[train_index], X_train.iloc[val_index]
+        k_y_train, y_val    = y_train[train_index], y_train[val_index]
 
         # create the SVM model
         model = SVR(kernel='rbf')
@@ -73,11 +79,11 @@ def svm_cv(X, y):
 
         mae_scores.append(mae)
         r2_scores.append(r2)
-        pearsonr_scores.append(pearsonr)
+        pearsonr_scores.append(pearsonr[0])
 
         # scatter plot predictions vs. actual values on the appropriate subplot
         axs[i].scatter(y_val, predictions)
-        axs[i].set_title(f'Fold {i+1} Predictions vs. Actual\nMAE={mae:.2f}, R2={r2:.2f}, Pearsonr={pearsonr:.2f}')
+        axs[i].set_title(f'Fold {i+1} Predictions vs. Actual\nMAE={mae:.2f}, R2={r2:.2f}, Pearsonr={pearsonr[0]:.2f}')
         axs[i].set_ylabel('Actual')
         axs[i].set_xlabel('Predictions')
         axs[i].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
@@ -85,7 +91,7 @@ def svm_cv(X, y):
     # print the model's mean and standard dev performance metrics
     print('Validation MAE: %.3f (%.3f)' % ((st.mean(mae_scores)), st.stdev(mae_scores)))
     print('Validation R2: %.3f (%.3f)' % ((st.mean(r2_scores)), st.stdev(r2_scores)))
-    print('Validation Pearsonr: %.3f (%.3f)' % ((st.mean(pearsonr_scores)), st.stdev(pearsonr_scores)))
+    print('Validation Pearsonr: %.3f (%.3f)' % ((st.mean(pearsonr_scores)), (st.stdev(pearsonr_scores))))
 
     best_model.fit(X_train, y_train)
 
@@ -111,3 +117,4 @@ def svm_cv(X, y):
     plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
 
     return best_model
+
