@@ -1,4 +1,3 @@
-from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, FunctionTransformer
 import joblib
@@ -6,9 +5,9 @@ from AntiBERTy import AntiBERTyEncoder
 import pandas as pd
 
 # load models
-svm = joblib.load('./models/200423_svm_model.joblib')
+svm = joblib.load('../models/200423_svm_model.joblib')
 
-data72 = pd.read_csv('./data/combined_datasets_72.csv')
+data72 = pd.read_csv('../data/combined_datasets_72.csv')
 
 #scaler = joblib.load('./models/150423_standscaler.joblib')
 
