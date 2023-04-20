@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mt-5 mb-3">Melting Temperature Predictor</h1>
+        <form method="POST" action="/predict" id = "predict-form">
+            <div class="form-group">
+                <label for="heavy_chain">Heavy chain:</label>
+                <input type="text" class="form-control" id="heavy_chain" name="heavy_chain">
+            </div>
+            <div class="form-group">
+                <label for="light_chain">Light chain:</label>
+                <input type="text" class="form-control" id="light_chain" name="light_chain">
+            </div>
+            <button type="submit" class="btn btn-primary">Predict</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}
