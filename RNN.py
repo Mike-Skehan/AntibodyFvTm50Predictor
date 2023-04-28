@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 
 
-def rnn_cv():
+def rnn_cv(X,y, num_epochs=100, batch_size=10):
     # set up the subplots
     fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(10, 15))
     axs = axs.flatten()
