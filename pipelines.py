@@ -6,10 +6,12 @@ import pandas as pd
 
 # load models
 svm = joblib.load('../models/200423_svm_model.joblib')
+rf = joblib.load('../models/ab72_rfkf_28032023.joblib')
 
 data72 = pd.read_csv('../data/combined_datasets_72.csv')
 
 #scaler = joblib.load('./models/150423_standscaler.joblib')
+
 
 def select_columns(X):
     # Replace this list with the names of the columns you want to select
@@ -25,6 +27,11 @@ svm_pipe = Pipeline([
     ('encoder', AntiBERTyEncoder()),
     ('selector', FunctionTransformer(select_columns)),
     ('svm', svm)])
+
+rf_pipe = Pipeline([
+    ('encoder', AntiBERTyEncoder()),
+    ('selector', FunctionTransformer(select_columns)),
+    ('rf', rf)])
 
 
 if __name__ == '__main__':
