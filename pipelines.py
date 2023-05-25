@@ -5,10 +5,10 @@ from AntiBERTy import AntiBERTyEncoder
 import pandas as pd
 
 # load models
-svm = joblib.load('../models/200423_svm_model.joblib')
-rf = joblib.load('../models/ab72_rfkf_28032023.joblib')
+svm = joblib.load('./models/200423_svm_model.joblib')
+rf = joblib.load('./models/rf_72_25052023.joblib')
 
-data72 = pd.read_csv('../data/combined_datasets_72.csv')
+data72 = pd.read_csv('./data/combined_datasets_72.csv')
 
 #scaler = joblib.load('./models/150423_standscaler.joblib')
 
@@ -36,9 +36,10 @@ rf_pipe = Pipeline([
 
 if __name__ == '__main__':
     # test pipeline
-    X = ['ELQMTQSPASLAVSLGQRATISCKASQSVDYDGDSYMNWYQQKPGQPPKLLIYAASNLESGIPARFSGSGSRTDFTLTINPVETDDVATYYCQQSHEDPYTFGGGTKLEIK',
-'LESGAELVKPGASVKLSCKASGYIFTTYWMQWVKQRPGQGLEWIGEIHPSNGLTNYNEKFKSKATLTVDKSSTTAYMQLSSLTSEDSAVYYCSKGRELGRFAYWGQGTLVTVSA']
-
+    X = ['QVQLQQSGGELAKPGASVKVSCKASGYTFSSFWMHWVRQAPGQGLEWIGYINPRSGYTEYNEIFRDKATMTTDTSTSTAYMELSSLRSEDTAVYYCASFLGRGAMDYWGQGTTVTVSS',
+'DIQMTQSPSSLSASVGDRVTITCRASQDISNYLAWYQQKPGKAPKLLIYYTSKIHSGVPSRFSGSGSGTDYTFTISSLQPEDIATYYCQQGNTFPYTFGQGTKVEIK']
 
     print(svm_pipe.predict(X))
+    print(rf_pipe.predict(X))
+
 
