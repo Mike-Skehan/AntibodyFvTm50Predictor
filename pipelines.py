@@ -5,17 +5,16 @@ from AntiBERTy import AntiBERTyEncoder
 import pandas as pd
 
 # load models
-svm = joblib.load('./models/200423_svm_model.joblib')
-rf = joblib.load('./models/rf_72_25052023.joblib')
+svm = joblib.load('./models/05062023_svm_60.joblib')
+rf = joblib.load('./models/05062023_rf_60.joblib')
 
-data72 = pd.read_csv('./data/combined_datasets_72.csv')
+data60 = pd.read_csv('./data/combined_datasets_60.csv')
 
-#scaler = joblib.load('./models/150423_standscaler.joblib')
 
 
 def select_columns(X):
     # Replace this list with the names of the columns you want to select
-    selected_features = data72.columns
+    selected_features = data60.columns
     X.columns = ['{}'.format(i) for i in range(len(X.columns))]
     X_new = X[selected_features]
     X_new.columns = ['{}'.format(i) for i in range(len(X_new.columns))]

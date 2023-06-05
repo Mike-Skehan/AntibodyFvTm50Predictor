@@ -10,6 +10,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 import joblib
 import statistics as st
 from scipy.stats import uniform
+import seaborn as sns
 
 sys.path.insert(0, "../data/")
 sys.path.insert(0, "../")
@@ -136,7 +137,7 @@ def rf_cv(X, y):
     :param y: Labels
     :return: Best model
     """
-
+    sns.set_style(style='white')
     rand = 28
 
     y = pd.DataFrame(y)
