@@ -38,6 +38,28 @@ def data_extract(data_file):
     return light_seq, heavy_seq, temp
 
 
+def data_extract_class(data_file):
+    """
+    :param data_file:   csv file containing light sequences, heavy sequences and their tm50 values.
+    :return:            lists of light sequences, heavy sequences and tm50 values.
+    """
+
+    df = pd.read_csv(data_file)
+    df.rename(columns={'VL': 'Light'}, inplace=True)
+    df.rename(columns={'VH': 'Heavy'}, inplace=True)
+    df.rename(columns={"Fab Tm by DSF (°C)": 'Temp'}, inplace=True)
+
+    light_seq = df['Light'].values.tolist()
+    heavy_seq = df['Heavy'].values.tolist()
+    temp = df['Temp'].values.tolist()
+    bin = df['bin'].values.tolist()
+
+    light_seq = remove_special_chars(light_seq)
+    heavy_seq = remove_special_chars(heavy_seq)
+
+    return light_seq, heavy_seq, temp, bin
+
+
 def data_extract_abY(data_file):
     """
 
