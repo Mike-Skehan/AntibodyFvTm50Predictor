@@ -31,13 +31,13 @@ def rf_class(X, y, params, iters, cv_num):
 
     return model
 
-def svm_class():
+def svm_classifier():
     return x
 
-def gbt_class()
+def gbt_classifier()
     return x
 
-def rnn_class():
+def rnn_classifier():
     return x
 
 
