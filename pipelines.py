@@ -5,11 +5,11 @@ from AntiBERTy import AntiBERTyEncoder
 import pandas as pd
 
 # load models
-svm = joblib.load('./models/05062023_svm_60.joblib')
-rf = joblib.load('./models/05062023_rf_60.joblib')
-gbt = joblib.load('./models/05062023_gb_60.joblib')
+svm = joblib.load('../models/05062023_svm_60.joblib')
+rf = joblib.load('../models/05062023_rf_60.joblib')
+gbt = joblib.load('../models/05062023_gb_60.joblib')
 
-data60 = pd.read_csv('./data/combined_datasets_60.csv')
+data60 = pd.read_csv('../data/combined_datasets_60.csv')
 
 
 def select_columns(X):

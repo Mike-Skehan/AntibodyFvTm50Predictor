@@ -34,7 +34,7 @@ def rf_class(X, y, params, iters, cv_num):
 def svm_classifier():
     return x
 
-def gbt_classifier()
+def gbt_classifier():
     return x
 
 def rnn_classifier():
