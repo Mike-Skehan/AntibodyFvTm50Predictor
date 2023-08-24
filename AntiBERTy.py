@@ -85,7 +85,6 @@ class AntiBERTyEncoder(BaseEstimator, TransformerMixin):
         final = torch.cat(embed_list, dim=0)
         encoded_seq = pd.DataFrame(final.detach().numpy())
 
-
         return encoded_seq
 
 
