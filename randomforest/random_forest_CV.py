@@ -192,12 +192,12 @@ def rf_cv(X, y):
 
         random_search.fit(k_X_train, k_y_train)
 
-        # evaluate the model on the test set
+        # evaluate the model on the validation set
         predictions = random_search.predict(X_val)
         mae = mean_absolute_error(y_val, predictions)
         r2 = r2_score(y_val, predictions)
 
-        # y_test and predictions are arrays with shape (36, 1)
+        # y_val and predictions are arrays with shape (36, 1)
         y_val_reshaped = np.squeeze(y_val)
         predictions_reshaped = np.squeeze(predictions)
 

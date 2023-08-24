@@ -1,5 +1,6 @@
 import numpy as np
-from sklearn.model_selection import train_test_split
+import pandas as pd
+from sklearn.model_selection import train_test_split, KFold, RandomizedSearchCV
 import seaborn as sns
 from scipy.stats import stats
 from sklearn import ensemble
@@ -78,9 +79,6 @@ def gradient_boosting_regression(X, y):
     plt.show()
 
     return reg
-
-
-
 
 
 
