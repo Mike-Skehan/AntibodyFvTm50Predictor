@@ -1,5 +1,6 @@
 import pipelines
 import tkinter as tk
+import customtkinter as ctk
 
 
 def predict_tm50(heavy, light):
@@ -16,27 +17,27 @@ def predict_tm50(heavy, light):
 #print("The predicted tm50 value is: ", round(*result, 2))
 
 # GUI using tkinter
-root = tk.Tk()
+root = ctk.CTk()
 root.title("AntiBERTy")
 root.geometry("500x500")
 
 # Create a label
-heavy_label = tk.Label(root, text="Enter heavy chain sequence: ")
+heavy_label = ctk.CTkLabel(root, text="Enter heavy chain sequence: ")
 heavy_label.pack()
 
 # Create an entry box
-heavy_entry = tk.Entry(root)
+heavy_entry = ctk.CTkEntry(root)
 heavy_entry.pack()
 
 # Create a label
-light_label = tk.Label(root, text="Enter light chain sequence: ")
+light_label = ctk.CTkLabel(root, text="Enter light chain sequence: ")
 light_label.pack()
 
 # Create an entry box
-light_entry = tk.Entry(root)
+light_entry = ctk.CTkEntry(root)
 light_entry.pack()
 
-result = tk.Label(root, text="")
+result = ctk.CTkLabel(root, text="")
 result.pack()
 
 
@@ -44,12 +45,14 @@ def get_result():
     tm50 = (predict_tm50(heavy_entry.get(), light_entry.get()))
     rounded_tm50 = round(*tm50, 2)
     output_text = "The predicted tm50 value is: " + str(rounded_tm50) + "°C"
-    result.config(text = output_text)
+    result.configure(text = output_text)
 
 
 # Create a submit button which will use the predict_tm50 function
-submit_button = tk.Button(root, text="Submit", command=get_result)
+submit_button = ctk.CTkButton(root, text="Submit", command=get_result)
 submit_button.pack()
 
 # Run the mainloop
 root.mainloop()
+
+#%%
