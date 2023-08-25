@@ -35,12 +35,24 @@ def predict_melting_temperature(h, l):
 def home():
     return render_template('index.html')
 
+aa3_aa1 = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+           'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+           'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+           'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+
+aa = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
 
 @app.route('/predict', methods=['POST'])
 def predict():
     # Get the amino acid sequences from the form data
     heavy_chain = request.form['heavy_chain']
     light_chain = request.form['light_chain']
+
+    # Validate the amino acid sequences
+    if not all(aa_char in aa for aa_char in heavy_chain):
+        return jsonify({'error': 'Invalid character in heavy chain'}), 400
+    if not all(aa_char in aa for aa_char in light_chain):
+        return jsonify({'error': 'Invalid character in light chain'}), 400
 
     # Call your pipeline to predict the melting temperature
     melting_temperature = (predict_melting_temperature(heavy_chain, light_chain))
@@ -65,6 +77,12 @@ def contact():
         return render_template('contact.html', success=True)
     else:
         return render_template('contact.html', success=False)
+
+
+# add error handling
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 @app.route('/About')
