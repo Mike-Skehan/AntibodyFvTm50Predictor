@@ -54,7 +54,7 @@ def predict():
     if not all(aa_char in aa for aa_char in light_chain):
         return jsonify({'error': 'Invalid character in light chain'})
 
-    # Call your pipeline to predict the melting temperature
+    # Call the pipeline to predict the melting temperature
     melting_temperature = (predict_melting_temperature(heavy_chain, light_chain))
 
     # Return the result as JSON
@@ -77,12 +77,6 @@ def contact():
         return render_template('contact.html', success=True)
     else:
         return render_template('contact.html', success=False)
-
-
-# add error handling
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
 
 
 @app.route('/About')
