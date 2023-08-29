@@ -9,18 +9,11 @@ from matplotlib import pyplot as plt
 
 
 def gradient_boosting_regression(X, y):
-    """Gradient Boosting for regression
+    """
+    :param X: features.
+    :param y: labels.
 
-    Parameters
-    ----------
-    X : array-like of shape = [n_samples, n_features]
-        The training input samples.
-    y : array-like, shape = [n_samples]
-        The target values (real numbers in regression).
-
-    Returns
-    -------
-    reg : regression model.
+    :return regression model.
     """
     params = {
         "n_estimators": 5000,
@@ -83,18 +76,12 @@ def gradient_boosting_regression(X, y):
 # gradient boosting randomized search
 
 def gradient_boosting_randomized_search(X, y):
-    """Gradient Boosting for regression
+    """
 
-    Parameters
-    ----------
-    X : array-like of shape = [n_samples, n_features]
-        The training input samples.
-    y : array-like, shape = [n_samples]
-        The target values (real numbers in regression).
+    :param X: features.
+    :param y: labels.
 
-    Returns
-    -------
-    reg : regression model.
+    :return best parameters.
     """
     params = {
         "n_estimators": [1000, 3000, 5000, 8000],

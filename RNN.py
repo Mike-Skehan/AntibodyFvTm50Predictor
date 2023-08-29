@@ -11,6 +11,15 @@ import pandas as pd
 
 def rnn_cv(X,y, num_epochs=100, batch_size=10):
 
+    """
+
+    :param X: encoded sequences
+    :param y: labels
+    :param num_epochs: epochs to train the model
+    :param batch_size: number of samples per gradient update
+    :return: best model
+    """
+
     sns.set_style(style='white')
 
     rand = 28

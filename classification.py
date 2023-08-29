@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.stats import stats
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from tensorflow.keras.models import Sequential
@@ -15,7 +15,6 @@ def rf_class(X, y, iters, cv_num):
     Random Forest Classifier
     :param X: features
     :param y: labels
-    :param params: hyperparameters
     :param iters: number of iterations
     :param cv_num: number of cross validations
     :return: model
@@ -67,6 +66,10 @@ def rf_class(X, y, iters, cv_num):
 def svm_classifier(X, y, iters, cv_num):
     """
     SVM Classifier
+    :param X: features
+    :param y: labels
+    :param iters: number of iterations
+    :param cv_num: number of cross validations
     :return: model
     """
     svm_params = {'C': uniform(loc=0, scale=1000), 'gamma': ['scale', 'auto'] + list(np.logspace(-5, 2, 10))}
@@ -99,13 +102,13 @@ def svm_classifier(X, y, iters, cv_num):
 
 def gbt_class(X, y, params, iters, cv_num):
     """
-    Random Forest Classifier
+    Gradient Boosted Classifier
     :param X: features
     :param y: labels
     :param params: hyperparameters
     :param iters: number of iterations
     :param cv_num: number of cross validations
-    :return: model
+    :return: best model
     """
 
     # train test split
@@ -137,11 +140,11 @@ def gbt_class(X, y, params, iters, cv_num):
 def rnn_classifier(X, y, num_epochs=100, batch_size=10):
     """
     Recurrent Neural Network Classifier
-    :param X:
-    :param y:
-    :param num_epochs:
-    :param batch_size:
-    :return:
+    :param X: features
+    :param y: labels
+    :param num_epochs: epochs to train the model
+    :param batch_size: number of samples per gradient update
+    :return: best model
     """
     rand = 28
 

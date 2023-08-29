@@ -5,7 +5,7 @@ In this work, AntiBERTy was used to encode antibody sequences. A 2D plot generat
 
 The results from this study demonstrate that, firstly, AntiBERTy can capture unique, species specific features from amino acid sequences, and secondly, an accurate Tm50 predictor can be achieved using a GBT model trained on AntiBERTy encoded amino acid sequences.
 
-A regression model using GBT was shown to be effective in predicting Tm50 with a MAE of 2.69C, PCC 0.83.
+A regression model using GBT was shown to be effective in predicting Tm50 with a MAE of 2.61C, PCC 0.84.
 ![GBT_act_vs_pred_2](https://github.com/Mike-Skehan/AntibodyFvTm50Predictor/assets/97400544/ad04df54-9207-4afe-b96d-d4b66db1b7c2)
 
 AntiBERTy can capture unique, species specific features from amino acid sequences, even after feature reduction form 512-features to 60.

@@ -1,7 +1,6 @@
 from igfold import IgFoldRunner
 import torch
 from sklearn.base import BaseEstimator, TransformerMixin
-
 from tools import data_parser as dp
 import pandas as pd
 
@@ -9,6 +8,12 @@ igfold = IgFoldRunner()
 
 
 def sequence_generator(heavy, light):
+    """
+
+    :param heavy: Heavy chain sequence. string
+    :param light: Light chain sequence. string
+    :return: dictionary of heavy and light chain sequences.
+    """
     length = len(light)
 
     for i in range(0, length):
@@ -58,11 +63,19 @@ def bert_csv(data_file):
 
 
 class AntiBERTyEncoder(BaseEstimator, TransformerMixin):
+    """
+    Transformer class for antiBERTy encoding.
+    """
     def __init__(self):
         self.igfold = IgFoldRunner()
 
     @classmethod
     def sequence_generator(cls, X):
+        """
+
+        :param X: heavy and light chain sequences. tuple
+        :return: dictionary of heavy and light chain sequences.
+        """
         heavy, light = X
         sequences = {"H": heavy, "L": light}
         yield sequences
@@ -71,6 +84,11 @@ class AntiBERTyEncoder(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
+        """
+
+        :param X: heavy and light chain sequences. tuple
+        :return: antiBERTy encoded concatenated sequences. pandas dataframe
+        """
         embed_list = []
         sequence_gen = self.sequence_generator(X)
 

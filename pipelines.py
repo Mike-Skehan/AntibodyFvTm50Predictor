@@ -13,7 +13,12 @@ data60 = pd.read_csv('../data/combined_datasets_60.csv')
 
 
 def select_columns(X):
-    # Replace this list with the names of the columns you want to select
+    """
+
+    :param X: antiBERTy encoded dataset.
+    :return: reduced dataset with selected features.
+    """
+
     selected_features = data60.columns
     X.columns = ['{}'.format(i) for i in range(len(X.columns))]
     X_new = X[selected_features]
