@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "Citation:"
+authors:
+  - family-names: Skehan
+    given-names: Michael
+title: "AntibodyFvTm50Predictor"
+version: 1.0.0
+date-released: 2023-08-29
