@@ -1,5 +1,4 @@
 import pipelines
-import tkinter as tk
 import customtkinter as ctk
 
 
@@ -8,13 +7,6 @@ def predict_tm50(heavy, light):
     seq = [heavy,light]
     return pipelines.svm_pipe.predict(seq)
 
-
-#heavy = input("Enter heavy chain sequence: ")
-#light = input("Enter light chain sequence: ")
-
-#result = predict_tm50(heavy, light)
-
-#print("The predicted tm50 value is: ", round(*result, 2))
 
 # GUI using tkinter
 root = ctk.CTk()

@@ -1,5 +1,5 @@
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, FunctionTransformer
+from sklearn.preprocessing import FunctionTransformer
 import joblib
 from AntiBERTy import AntiBERTyEncoder
 import pandas as pd

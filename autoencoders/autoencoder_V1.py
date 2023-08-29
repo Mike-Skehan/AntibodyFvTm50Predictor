@@ -21,12 +21,9 @@ sys.path.insert(0,"../tools/")
 
 light_len = 150
 heavy_len = 150
-#print(len(tf.config.list_physical_devices('GPU'))>0)
 
-
-#LSTM = tf.keras.layers.CuDNNLSTM(16)
 LSTM = tf.compat.v1.keras.layers.CuDNNLSTM(16)
-#LSTM1 = tf.keras.layers.CuDNNLSTM(16,return_sequences = True)
+
 LSTM1 = tf.compat.v1.keras.layers.CuDNNLSTM(16,return_sequences = True)
 
 ReductionV2AUTO = tf.keras.losses.Reduction.AUTO
@@ -146,11 +143,6 @@ def autoencoder_Titan(input_shape, compile = True):
     heavy_input = L.Input((heavy_len,input_shape), dtype='float', name='Heavy_Input')
 
 
-
-    #light_embed = L.Embedding(input_dim=input_dims, output_dim=10, name='Light_Embed')(light_input)
-    #heavy_embed = L.Embedding(input_dim=input_dims, output_dim=10, name='Heavy_Embed')(heavy_input)
-
-
     def encoder (inputs):
 
         #Recurrent layers
@@ -207,7 +199,6 @@ def autoencoder_Titan(input_shape, compile = True):
         mask_mse_loss = get_loss(0)
 
 
-        #masked_categorical_crossentropy = get_loss(np.zeros(len(aa_order)))
         autoencoder.compile(optimizer=tf.keras.optimizers.Adamax(), loss=get_loss(0), metrics=[accuracy])
 
 
@@ -217,15 +208,9 @@ def autoencoder_Titan(input_shape, compile = True):
 
 encoder, autoencoder = autoencoder_Titan(20)
 
-#SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
-
-
-#print(autoencoder.count_params())
 
 if __name__ == '__main__':
 
-    #plot_model(autoencoder,show_shapes = True, to_file='model.png')
-    #SVG(model_to_dot(autoencoder, show_shapes=True).create(prog='dot', format='svg'))
 
     light, heavy, source, name = dp.data_extract_abY('../data/abYsis_data.csv')
 

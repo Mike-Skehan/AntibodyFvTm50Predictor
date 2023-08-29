@@ -50,9 +50,9 @@ def predict():
 
     # Validate the amino acid sequences
     if not all(aa_char in aa for aa_char in heavy_chain):
-        return jsonify({'error': 'Invalid character in heavy chain'}), 400
+        return jsonify({'error': 'Invalid character in heavy chain'})
     if not all(aa_char in aa for aa_char in light_chain):
-        return jsonify({'error': 'Invalid character in light chain'}), 400
+        return jsonify({'error': 'Invalid character in light chain'})
 
     # Call your pipeline to predict the melting temperature
     melting_temperature = (predict_melting_temperature(heavy_chain, light_chain))

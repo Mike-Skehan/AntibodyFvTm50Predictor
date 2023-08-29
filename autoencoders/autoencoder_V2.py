@@ -111,22 +111,3 @@ if __name__ == '__main__':
     plt.legend()
     plt.show()
 
-
-    #history = autoencoder.fit([v_light_input, v_heavy_input], [v_light_input, v_heavy_input],
-    #                     epochs=1000, batch_size=32, validation_split=0.2, shuffle = True)
-
-
-
-    #plt.figure(figsize=(10, 4))
-    #plt.plot(autoencoder.history.history['val_loss'], label='Validation loss')
-    #plt.plot(autoencoder.history.history['loss'], label='Training loss')
-    #plt.legend()
-    #plt.grid()
-    #plt.tight_layout()
-    #plt.savefig('vec_loss_output_testing.png')
-
-    #print("Evaluate on test data")
-    #results = autoencoder.evaluate([test_light_encoded, test_heavy_encoded], [test_light_encoded, test_heavy_encoded], batch_size=32)
-
-    #print (results)
-    #print(dict(zip(autoencoder.metrics_names, results)))
